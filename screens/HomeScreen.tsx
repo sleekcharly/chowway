@@ -25,14 +25,29 @@ const HomeScreen = () => {
   //   define state for featured categories
   const [featuredCategories, setFeaturedCategories] = useState([]);
 
+  // for when the UI loads
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: false,
     });
   }, []);
 
+  // for when the functional component actually loads
   useEffect(() => {
-    sanityClient.fetch;
+    sanityClient
+      .fetch(
+        `
+    *[_type == "featured"] {
+        ...,
+        restaurants[] -> {
+            ...,
+            dishes[] ->
+        }
+    }`,
+      )
+      .then((data) => {
+        setFeaturedCategories(data);
+      });
   }, []);
 
   return (
@@ -76,21 +91,20 @@ const HomeScreen = () => {
         <Categories />
 
         {/* Featured Rows */}
-        <FeaturedRow
-          id="123"
-          title="Featured"
-          description="Paid placements from our partners"
-        />
-        <FeaturedRow
-          id="1234"
-          title="Tasty Discounts"
-          description="Everyone's been enjoying these juicy discounts!"
-        />
-        <FeaturedRow
-          id="12345"
-          title="Offers near you!"
-          description="Why not support your local restaurant tonight!"
-        />
+        {featuredCategories?.map(
+          (category: {
+            _id: string;
+            name: string;
+            short_description: string;
+          }) => (
+            <FeaturedRow
+              key={category._id}
+              id={category._id}
+              title={category.name}
+              description={category.short_description}
+            />
+          ),
+        )}
       </ScrollView>
     </SafeAreaView>
   );

@@ -1,8 +1,33 @@
 import { View, Text, ScrollView } from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import CategoryCard from './CategoryCard';
+import sanityClient, { urlFor } from '../sanity';
+
+type CategoryProps = {
+  _id: string;
+  name: string;
+  image: {
+    _ref: string;
+  };
+};
 
 const Categories = () => {
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    sanityClient
+      .fetch(
+        `
+            *[_type == "category"]
+            `,
+      )
+      .then((data) => {
+        setCategories(data);
+      });
+  }, []);
+
+  console.log(categories);
+
   return (
     <ScrollView
       contentContainerStyle={{
@@ -12,30 +37,13 @@ const Categories = () => {
       horizontal
       showsVerticalScrollIndicator={false}
     >
-      <CategoryCard
-        imgUrl="https://mrtsbakery.com.au/cdn/shop/articles/unnamed_388f2e43-0619-438d-9212-2539bf2c70d5_800x.jpg?v=1578206798"
-        title="Testing 1"
-      />
-      <CategoryCard
-        imgUrl="https://mrtsbakery.com.au/cdn/shop/articles/unnamed_388f2e43-0619-438d-9212-2539bf2c70d5_800x.jpg?v=1578206798"
-        title="Testing 2"
-      />
-      <CategoryCard
-        imgUrl="https://mrtsbakery.com.au/cdn/shop/articles/unnamed_388f2e43-0619-438d-9212-2539bf2c70d5_800x.jpg?v=1578206798"
-        title="Testing 3"
-      />
-      <CategoryCard
-        imgUrl="https://mrtsbakery.com.au/cdn/shop/articles/unnamed_388f2e43-0619-438d-9212-2539bf2c70d5_800x.jpg?v=1578206798"
-        title="Testing 3"
-      />
-      <CategoryCard
-        imgUrl="https://mrtsbakery.com.au/cdn/shop/articles/unnamed_388f2e43-0619-438d-9212-2539bf2c70d5_800x.jpg?v=1578206798"
-        title="Testing 3"
-      />
-      <CategoryCard
-        imgUrl="https://mrtsbakery.com.au/cdn/shop/articles/unnamed_388f2e43-0619-438d-9212-2539bf2c70d5_800x.jpg?v=1578206798"
-        title="Testing 3"
-      />
+      {categories.map((category: CategoryProps) => (
+        <CategoryCard
+          key={category._id}
+          imgUrl={urlFor(category.image).width(200).url()}
+          title={category.name}
+        />
+      ))}
     </ScrollView>
   );
 };

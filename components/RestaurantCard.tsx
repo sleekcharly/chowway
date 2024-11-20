@@ -2,10 +2,11 @@ import { View, Text, TouchableOpacity, Image } from 'react-native';
 import React from 'react';
 import { StarIcon } from 'react-native-heroicons/solid';
 import { MapPinIcon } from 'react-native-heroicons/outline';
+import { urlFor } from '../sanity';
 
 type Props = {
   id: number;
-  imgUrl: string;
+  imgUrl: {};
   title: string;
   rating: number;
   genre: string;
@@ -32,7 +33,7 @@ const RestaurantCard = ({
     <TouchableOpacity className="mr-3 bg-white">
       <Image
         source={{
-          uri: imgUrl,
+          uri: urlFor(imgUrl).url(),
         }}
         className="h-36 w-64 rounded-sm"
       />

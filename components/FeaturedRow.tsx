@@ -1,7 +1,8 @@
 import { View, Text, ScrollView } from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ArrowRightIcon } from 'react-native-heroicons/outline';
 import RestaurantCard from './RestaurantCard';
+import sanityClient from '../sanity';
 
 type Props = {
   id: string;
@@ -9,7 +10,44 @@ type Props = {
   description: string;
 };
 
+type RestaurantProps = {
+  _id: number;
+  image: {};
+  address: string;
+  name: string;
+  dishes: string[];
+  rating: number;
+  short_description: string;
+  genre: string;
+  long: number;
+  lat: number;
+};
+
 const FeaturedRow = ({ id, title, description }: Props) => {
+  const [restaurants, setRestaurants] = useState([]);
+
+  useEffect(() => {
+    sanityClient
+      .fetch(
+        `
+    *[_type == 'featured' && _id == $id] {
+        ...,
+        restaurants[]-> {
+            ...,
+            dishes[]->,
+            type-> {
+                name
+            }
+        }
+      }[0]
+    `,
+        { id },
+      )
+      .then((data) => {
+        setRestaurants(data?.restaurants);
+      });
+  }, [id]);
+
   return (
     <View>
       <View className="mt-4 flex-row items-center justify-between px-4">
@@ -27,45 +65,22 @@ const FeaturedRow = ({ id, title, description }: Props) => {
         showsHorizontalScrollIndicator={false}
         className="pt-4"
       >
+        {restaurants.map((restaurant: RestaurantProps) => (
+          <RestaurantCard
+            key={restaurant._id}
+            id={restaurant._id}
+            imgUrl={restaurant.image}
+            title={restaurant.name}
+            rating={restaurant.rating}
+            genre={restaurant.genre}
+            address={restaurant.address}
+            short_description={restaurant.short_description}
+            dishes={restaurant.dishes}
+            long={restaurant.long}
+            lat={restaurant.lat}
+          />
+        ))}
         {/* RestaurantCards... */}
-        <RestaurantCard
-          id={123}
-          imgUrl="https://mrtsbakery.com.au/cdn/shop/articles/unnamed_388f2e43-0619-438d-9212-2539bf2c70d5_800x.jpg?v=1578206798"
-          title="Yo! Sushi"
-          rating={4.5}
-          genre="Japanese"
-          address="123 Main St"
-          short_description="This is a test description"
-          dishes={[]}
-          long={20}
-          lat={0}
-        />
-
-        <RestaurantCard
-          id={123}
-          imgUrl="https://mrtsbakery.com.au/cdn/shop/articles/unnamed_388f2e43-0619-438d-9212-2539bf2c70d5_800x.jpg?v=1578206798"
-          title="Yo! Sushi"
-          rating={4.5}
-          genre="Japanese"
-          address="123 Main St"
-          short_description="This is a test description"
-          dishes={[]}
-          long={20}
-          lat={0}
-        />
-
-        <RestaurantCard
-          id={123}
-          imgUrl="https://mrtsbakery.com.au/cdn/shop/articles/unnamed_388f2e43-0619-438d-9212-2539bf2c70d5_800x.jpg?v=1578206798"
-          title="Yo! Sushi"
-          rating={4.5}
-          genre="Japanese"
-          address="123 Main St"
-          short_description="This is a test description"
-          dishes={[]}
-          long={20}
-          lat={0}
-        />
       </ScrollView>
     </View>
   );
