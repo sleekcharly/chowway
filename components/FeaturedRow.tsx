@@ -18,7 +18,7 @@ type RestaurantProps = {
   dishes: string[];
   rating: number;
   short_description: string;
-  genre: string;
+  type: any;
   long: number;
   lat: number;
 };
@@ -72,7 +72,7 @@ const FeaturedRow = ({ id, title, description }: Props) => {
             imgUrl={restaurant.image}
             title={restaurant.name}
             rating={restaurant.rating}
-            genre={restaurant.genre}
+            genre={restaurant.type?.name}
             address={restaurant.address}
             short_description={restaurant.short_description}
             dishes={restaurant.dishes}

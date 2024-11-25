@@ -1,11 +1,5 @@
-import {
-  View,
-  Text,
-  SafeAreaView,
-  Image,
-  TextInput,
-  ScrollView,
-} from 'react-native';
+import { View, Text, Image, TextInput, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import GlobalStyles from '../GlobalStyles';
@@ -51,7 +45,7 @@ const HomeScreen = () => {
   }, []);
 
   return (
-    <SafeAreaView style={GlobalStyles.droidSafeArea} className="bg-white pt-5">
+    <SafeAreaView className="bg-white pt-5">
       {/* Header */}
 
       <View className="flex-row pb-3 items-center mx-4 space-x-2 px-4">
